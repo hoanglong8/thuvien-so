@@ -1,6 +1,6 @@
 export const SITE = {
   name: "Thư viện số",
-  url: "https://thuvien-so.vercel.app",
+  url: "https://thuvien-so-vn.vercel.app",
   repo: "https://github.com/hoanglong8/thuvien-so",
   // Bật ở giai đoạn 3 (cần tên miền riêng, gói Vercel Pro và tài khoản AdSense đã duyệt).
   ads: { enabled: false, client: "" },

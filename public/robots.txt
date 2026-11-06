@@ -5,4 +5,4 @@ Disallow: /tai/
 Disallow: /en/read/
 Disallow: /en/download/
 
-Sitemap: https://thuvien-so.vercel.app/sitemap-index.xml
+Sitemap: https://thuvien-so-vn.vercel.app/sitemap-index.xml
