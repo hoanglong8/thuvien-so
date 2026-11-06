@@ -1,0 +1,11 @@
+---
+import Base from "../layouts/Base.astro";
+import { T, ROUTES } from "../i18n.mjs";
+import { readUrl } from "../lib/data.mjs";
+const { book: b, lang } = Astro.props;
+const t = T[lang], r = ROUTES[lang];
+---
+<Base lang={lang} title={`${t.readTitle}: ${b.title}`} noindex>
+  <p><a href={r.book(b.slug)}>← {t.back}</a> · <a href={r.dl(b.slug)}>{t.download}</a></p>
+  <iframe class="reader" src={readUrl(b.file)} title={b.title} allow="autoplay" loading="lazy"></iframe>
+</Base>

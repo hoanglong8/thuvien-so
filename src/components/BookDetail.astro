@@ -1,0 +1,71 @@
+---
+import Base from "../layouts/Base.astro";
+import Cover from "./Cover.astro";
+import BookList from "./BookList.astro";
+import AdSlot from "./AdSlot.astro";
+import { SITE } from "../config.mjs";
+import { T, ROUTES, langName } from "../i18n.mjs";
+import { related, canReadOnline } from "../lib/data.mjs";
+import { slugify } from "../../scripts/lib/catalog.mjs";
+
+const { book: b, lang } = Astro.props;
+const t = T[lang], r = ROUTES[lang];
+const desc = (lang === "en" && b.descEn) || b.desc;
+const by = b.authors.join(", ");
+const metaDesc = (desc || `${b.title}${by ? ` — ${by}` : ""}${b.year ? ` (${b.year})` : ""}. ${b.file ? t.read + " · " + t.download : t.infoOnly}`).slice(0, 160);
+const q = encodeURIComponent([b.title, b.authors[0]].filter(Boolean).join(" "));
+const fmtLabel = b.file && (b.file.format === "gdoc" ? "PDF" : b.file.format.toUpperCase());
+const jsonld = {
+  "@context": "https://schema.org", "@type": "Book", name: b.title, url: new URL(r.book(b.slug), SITE.url).href,
+  ...(b.originalTitle && { alternateName: b.originalTitle }),
+  ...(b.authors.length && { author: b.authors.map((name) => ({ "@type": "Person", name })) }),
+  ...(b.translators.length && { translator: b.translators.map((name) => ({ "@type": "Person", name })) }),
+  ...(b.publisher && { publisher: { "@type": "Organization", name: b.publisher } }),
+  ...(b.year && { datePublished: String(b.year) }),
+  ...(b.lang && { inLanguage: b.lang }),
+  ...(b.isbn && { isbn: b.isbn }),
+  ...(b.pages && { numberOfPages: b.pages }),
+  ...(b.cover && { image: new URL(b.cover, SITE.url).href }),
+  ...(desc && { description: desc }),
+  ...(b.file && { isAccessibleForFree: true }),
+};
+const rel = related(b);
+---
+<Base lang={lang} title={b.title} description={metaDesc} image={b.cover} jsonld={jsonld}>
+  <article class="detail">
+    <div><Cover book={b} eager /></div>
+    <div>
+      <h1>{b.title}</h1>
+      {b.originalTitle && <p class="tv">{b.originalTitle}</p>}
+      <dl class="meta">
+        {b.authors.length > 0 && <><dt>{t.by}</dt><dd>{b.authors.map((a, i) => <>{i > 0 && ", "}<a href={r.author(slugify(a))}>{a}</a></>)}</dd></>}
+        {b.translators.length > 0 && <><dt>{t.translator}</dt><dd>{b.translators.join(", ")}</dd></>}
+        {b.publisher && <><dt>{t.publisher}</dt><dd>{b.publisher}</dd></>}
+        {b.year && <><dt>{t.year}</dt><dd>{b.year}</dd></>}
+        {b.lang && <><dt>{t.language}</dt><dd>{langName(b.lang, lang)}</dd></>}
+        {b.pages && <><dt>{t.pages}</dt><dd>{b.pages}</dd></>}
+        {b.isbn && <><dt>{t.isbn}</dt><dd>{b.isbn}</dd></>}
+        {b.series && <><dt>{t.series}</dt><dd>{b.series}</dd></>}
+        {b.topics.length > 0 && <><dt>{t.topics}</dt><dd class="tags">{b.topics.map((x) => <a class="tag" href={r.topic(slugify(x))}>{x}</a>)}</dd></>}
+        {b.file && <><dt>{t.format}</dt><dd>{fmtLabel}{b.file.size && ` · ${b.file.size} MB`}</dd></>}
+        <dt>©</dt><dd>{t.rightsLabel[b.rights] || b.rights}</dd>
+      </dl>
+
+      {b.file ? (
+        <div class="actions">
+          {canReadOnline(b.file) && <a class="btn primary" href={r.read(b.slug)}>{t.read}</a>}
+          <a class={`btn ${canReadOnline(b.file) ? "ghost" : "primary"}`} href={r.dl(b.slug)}>{t.download} ({fmtLabel})</a>
+        </div>
+      ) : b.rights === "con-ban-quyen" ? (
+        <div>
+          <p class="note">{t.copyrighted}</p>
+          <div class="shops">{SITE.shops.map((s) => <a class="btn ghost" href={s.url.replace("{q}", q)} target="_blank" rel="nofollow sponsored noopener">{s.name}</a>)}</div>
+        </div>
+      ) : <p class="note">{t.noFileYet}</p>}
+
+      {desc && <p class="desc">{desc}</p>}
+    </div>
+  </article>
+  <AdSlot slot="book-bottom" />
+  {rel.length > 0 && <><h2>{t.related}</h2><BookList books={rel} lang={lang} /></>}
+</Base>

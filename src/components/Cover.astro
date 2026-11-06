@@ -1,0 +1,9 @@
+---
+const { book, eager = false } = Astro.props;
+// Bìa chữ khi chưa có ảnh: màu cố định theo tên sách
+let h = 0;
+for (const c of book.title) h = (h * 31 + c.charCodeAt(0)) % 360;
+---
+{book.cover
+  ? <img class="cover" src={book.cover} alt="" loading={eager ? "eager" : "lazy"} />
+  : <div class="cover ph" style={`background:hsl(${h} 35% 38%)`} aria-hidden="true">{book.title}</div>}

@@ -1,0 +1,13 @@
+---
+import Base from "../layouts/Base.astro";
+import BookList from "./BookList.astro";
+import { T } from "../i18n.mjs";
+const { group, lang, kind } = Astro.props;
+const t = T[lang];
+const heading = `${kind === "topic" ? t.booksIn : t.booksBy} ${group.name}`;
+---
+<Base lang={lang} title={heading} description={`${heading}: ${t.count(group.books.length)}.`}>
+  <h1>{heading}</h1>
+  <p class="count">{t.count(group.books.length)}</p>
+  <BookList books={group.books} lang={lang} />
+</Base>

@@ -1,0 +1,58 @@
+---
+import { SITE } from "../config.mjs";
+import { T, ROUTES, altPath } from "../i18n.mjs";
+import "../styles/global.css";
+
+const { lang = "vi", title, description, image, noindex = false, jsonld } = Astro.props;
+const t = T[lang], r = ROUTES[lang];
+const path = Astro.url.pathname;
+const alt = altPath(path, lang);
+const fullTitle = title ? `${title} — ${SITE.name}` : `${SITE.name} — ${t.tagline}`;
+const desc = description || t.tagline;
+const canonical = new URL(path, SITE.url).href;
+const viHref = new URL(lang === "vi" ? path : alt, SITE.url).href;
+const enHref = new URL(lang === "en" ? path : alt, SITE.url).href;
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{fullTitle}</title>
+<meta name="description" content={desc}>
+<link rel="canonical" href={canonical}>
+<link rel="alternate" hreflang="vi" href={viHref}>
+<link rel="alternate" hreflang="en" href={enHref}>
+<link rel="alternate" hreflang="x-default" href={viHref}>
+{noindex && <meta name="robots" content="noindex,follow">}
+<meta property="og:type" content={jsonld?.["@type"] === "Book" ? "book" : "website"}>
+<meta property="og:site_name" content={SITE.name}>
+<meta property="og:title" content={fullTitle}>
+<meta property="og:description" content={desc}>
+<meta property="og:url" content={canonical}>
+{image && <meta property="og:image" content={new URL(image, SITE.url).href}>}
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+{jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href={r.home}>📚 {SITE.name}</a>
+      <a class="lang" href={alt} hreflang={lang === "vi" ? "en" : "vi"}>{t.switchLang}</a>
+    </div>
+    <slot name="header" />
+  </div>
+</header>
+<main class="wrap"><slot /></main>
+<footer class="wrap foot">
+  <nav class="footnav">
+    <a href={r.about}>{t.nav.about}</a>
+    <a href={r.copyright}>{t.nav.copyright}</a>
+    <a href={r.privacy}>{t.nav.privacy}</a>
+    <a href={r.contact}>{t.nav.contact}</a>
+  </nav>
+  <p>{t.footer}</p>
+</footer>
+</body>
+</html>

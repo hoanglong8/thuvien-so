@@ -1,0 +1,26 @@
+---
+import Cover from "./Cover.astro";
+import { T, ROUTES } from "../i18n.mjs";
+import { slugify } from "../../scripts/lib/catalog.mjs";
+const { books, lang } = Astro.props;
+const t = T[lang], r = ROUTES[lang];
+---
+<ol class="list">
+  {books.map((b) => (
+    <li class="book">
+      <a href={r.book(b.slug)} tabindex="-1"><Cover book={b} /></a>
+      <div>
+        <p class="t"><a href={r.book(b.slug)}>{b.title}</a></p>
+        {b.originalTitle && <p class="tv">{b.originalTitle}</p>}
+        <p class="a">
+          {b.authors.map((a, i) => <>{i > 0 && ", "}<a href={r.author(slugify(a))}>{a}</a></>)}
+          {b.year && ` · ${b.year}`}
+        </p>
+        <div class="tags">
+          {b.file ? <span class="tag free">{t.free} · {b.file.format === "gdoc" ? "PDF" : b.file.format.toUpperCase()}</span> : <span class="tag">{t.infoOnly}</span>}
+          {b.topics.map((x) => <a class="tag" href={r.topic(slugify(x))}>{x}</a>)}
+        </div>
+      </div>
+    </li>
+  ))}
+</ol>

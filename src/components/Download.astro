@@ -1,0 +1,18 @@
+---
+import Base from "../layouts/Base.astro";
+import AdSlot from "./AdSlot.astro";
+import { T, ROUTES } from "../i18n.mjs";
+import { downloadUrl } from "../lib/data.mjs";
+const { book: b, lang } = Astro.props;
+const t = T[lang], r = ROUTES[lang];
+const fmt = b.file.format === "gdoc" ? "PDF" : b.file.format.toUpperCase();
+---
+<Base lang={lang} title={`${t.dlTitle}: ${b.title}`} noindex>
+  <h1>{t.dlTitle}: {b.title}</h1>
+  <p class="a">{b.authors.join(", ")}{b.year && ` · ${b.year}`} · {fmt}{b.file.size && ` · ${b.file.size} MB`}</p>
+  <AdSlot slot="download" />
+  <div class="actions"><a class="btn primary" href={downloadUrl(b.file)} rel="nofollow">{t.dlButton} ({fmt})</a></div>
+  <p class="note">{t.dlNote}</p>
+  {b.file.format === "epub" && <p class="note">{t.epubNote}</p>}
+  <p><a href={r.book(b.slug)}>← {t.back}</a></p>
+</Base>

@@ -1,0 +1,8 @@
+---
+import Group from "../../../components/Group.astro";
+import { AUTHORS } from "../../../lib/data.mjs";
+export function getStaticPaths() {
+  return AUTHORS.map((group) => ({ params: { slug: group.slug }, props: { group } }));
+}
+---
+<Group group={Astro.props.group} lang="en" kind="author" />

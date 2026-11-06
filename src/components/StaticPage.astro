@@ -1,0 +1,52 @@
+---
+import Base from "../layouts/Base.astro";
+import { SITE } from "../config.mjs";
+import { T, ROUTES } from "../i18n.mjs";
+const { page, lang } = Astro.props;
+const t = T[lang], r = ROUTES[lang];
+const issues = `${SITE.repo}/issues/new`;
+---
+<Base lang={lang} title={t.nav[page]}>
+  <article class="prose">
+    <h1>{t.nav[page]}</h1>
+    {lang === "vi" && page === "about" && <>
+      <p>{SITE.name} là thư viện sách điện tử cá nhân, mở miễn phí cho mọi người. Bạn có thể tra cứu sách theo tên, tác giả, dịch giả, nhà xuất bản, năm, ngôn ngữ và chủ đề; đọc trực tuyến hoặc tải về các cuốn được phép phát hành.</p>
+      <p>Thư viện ưu tiên hai nhóm: tác phẩm thuộc phạm vi công cộng (public domain) và các bản dịch, biên soạn tiếng Việt do {SITE.name} tự thực hiện. Sách còn bản quyền chỉ có trang thông tin kèm nơi mua.</p>
+      <p>Thư viện không thu phí đọc và tải sách.</p>
+    </>}
+    {lang === "en" && page === "about" && <>
+      <p>{SITE.name} is a personal digital library, free for everyone. You can search books by title, author, translator, publisher, year, language and topic, and read online or download the books that may be distributed.</p>
+      <p>The library focuses on public-domain works and on Vietnamese translations and editions made by {SITE.name} itself. In-copyright books only have an information page with links to bookshops.</p>
+      <p>Reading and downloading are free of charge.</p>
+    </>}
+
+    {lang === "vi" && page === "copyright" && <>
+      <p>{SITE.name} chỉ cung cấp file của sách thuộc một trong các nhóm: hết thời hạn bảo hộ (public domain), phát hành theo giấy phép mở, được tác giả hoặc nhà xuất bản cho phép, hoặc do {SITE.name} tự biên soạn/dịch. Mỗi cuốn đều ghi rõ tình trạng bản quyền trên trang sách.</p>
+      <h2>Yêu cầu gỡ bỏ</h2>
+      <p>Nếu bạn là chủ sở hữu quyền và cho rằng một file trên {SITE.name} vi phạm quyền của mình, vui lòng gửi yêu cầu qua <a href={issues} rel="nofollow">trang phản hồi</a> với các thông tin: đường dẫn trang sách, tên tác phẩm, căn cứ chứng minh quyền sở hữu, thông tin liên hệ. Chúng tôi sẽ ẩn file ngay khi nhận được yêu cầu hợp lệ, sau đó xác minh và phản hồi.</p>
+    </>}
+    {lang === "en" && page === "copyright" && <>
+      <p>{SITE.name} only provides files of books that are in the public domain, released under an open licence, published with the permission of the author or publisher, or edited/translated by {SITE.name} itself. Each book page states its copyright status.</p>
+      <h2>Takedown requests</h2>
+      <p>If you hold rights to a work and believe a file on {SITE.name} infringes them, please submit a request through our <a href={issues} rel="nofollow">feedback page</a> with the book page URL, the title of the work, evidence of your rights and your contact details. We will hide the file as soon as we receive a valid request, then verify and respond.</p>
+    </>}
+
+    {lang === "vi" && page === "privacy" && <>
+      <p>Hiện tại {SITE.name} không yêu cầu đăng ký tài khoản, không dùng cookie theo dõi và không thu thập dữ liệu cá nhân. Khi bạn đọc hoặc tải sách, file được phục vụ trực tiếp từ Google Drive và chịu chính sách quyền riêng tư của Google.</p>
+      <p>Khi thư viện bổ sung công cụ thống kê truy cập hoặc quảng cáo, trang này sẽ được cập nhật trước khi áp dụng.</p>
+    </>}
+    {lang === "en" && page === "privacy" && <>
+      <p>{SITE.name} currently requires no account, uses no tracking cookies and collects no personal data. When you read or download a book, the file is served directly by Google Drive under Google's privacy policy.</p>
+      <p>If the library adds analytics or advertising, this page will be updated before they take effect.</p>
+    </>}
+
+    {lang === "vi" && page === "contact" && <>
+      <p>Góp ý, đề xuất sách, báo lỗi metadata hoặc yêu cầu gỡ bỏ: vui lòng gửi qua <a href={issues} rel="nofollow">trang phản hồi trên GitHub</a>.</p>
+      <p>Yêu cầu liên quan đến bản quyền xem thêm tại <a href={r.copyright}>{t.nav.copyright}</a>.</p>
+    </>}
+    {lang === "en" && page === "contact" && <>
+      <p>For feedback, book suggestions, metadata corrections or takedown requests, please use our <a href={issues} rel="nofollow">GitHub feedback page</a>.</p>
+      <p>For copyright matters see <a href={r.copyright}>{t.nav.copyright}</a>.</p>
+    </>}
+  </article>
+</Base>

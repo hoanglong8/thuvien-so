@@ -1,0 +1,38 @@
+name: Đồng bộ kho sách từ Google Drive
+
+on:
+  schedule:
+    - cron: "30 19 * * *"   # 02:30 sáng hằng ngày giờ Việt Nam
+  workflow_dispatch: {}     # nút chạy tay trên tab Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Drive → Sheet (thêm sách mới ở trạng thái "Chờ duyệt")
+        run: node scripts/sync-drive.mjs
+      - name: Sheet → data/catalog.json (áp cổng bản quyền) + ảnh bìa
+        run: node scripts/build-catalog.mjs
+      - name: Kiểm thử quy tắc bản quyền
+        run: node --test tests/*.test.mjs
+      - name: Commit nếu có thay đổi (Vercel tự deploy lại)
+        run: |
+          git config user.name "thuvien-so-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data public/covers
+          if git diff --cached --quiet; then echo "Không có gì mới"; exit 0; fi
+          git commit -m "data: cập nhật danh mục $(date -u +%F)"
+          git push

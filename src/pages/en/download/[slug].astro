@@ -1,0 +1,8 @@
+---
+import C from "../../../components/Download.astro";
+import { BOOKS } from "../../../lib/data.mjs";
+export function getStaticPaths() {
+  return BOOKS.filter((b) => b.file).map((book) => ({ params: { slug: book.slug }, props: { book } }));
+}
+---
+<C book={Astro.props.book} lang="en" />

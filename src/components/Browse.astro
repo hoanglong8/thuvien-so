@@ -1,0 +1,47 @@
+---
+import Base from "../layouts/Base.astro";
+import BookList from "./BookList.astro";
+import AdSlot from "./AdSlot.astro";
+import { T, ROUTES, langName } from "../i18n.mjs";
+import { BOOKS, META, TOPICS } from "../lib/data.mjs";
+
+const { lang } = Astro.props;
+const t = T[lang], r = ROUTES[lang];
+const langs = [...new Set(BOOKS.map((b) => b.lang).filter(Boolean))].sort();
+const cfg = {
+  lang, routes: { book: r.book("§"), topic: r.topic("§"), author: r.author("§") },
+  t: { count: t.count("§"), empty: t.empty, free: t.free, infoOnly: t.infoOnly, allTopics: t.allTopics },
+  topics: TOPICS.map((x) => [x.slug, x.name, x.books.length]),
+};
+---
+<Base lang={lang}>
+  <Fragment slot="header">
+    <p class="lead">{t.tagline}</p>
+    <p class="stats">{t.stats(META.total.toLocaleString(lang), META.withFile.toLocaleString(lang))}</p>
+  </Fragment>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="new" class="on">{t.tabs.new}</button>
+    <button data-tab="free">{t.tabs.free}</button>
+    <button data-tab="all">{t.tabs.all}</button>
+  </nav>
+  <div class="controls">
+    <input id="q" type="search" placeholder={t.search} autocomplete="off" aria-label={t.search}>
+    <select id="lang" aria-label={t.allLangs}>
+      <option value="">{t.allLangs}</option>
+      {langs.map((l) => <option value={l}>{langName(l, lang)}</option>)}
+    </select>
+    <select id="era" aria-label={t.allEras}>
+      <option value="">{t.allEras}</option>
+      {t.eras.map(([v, label]) => <option value={v}>{label}</option>)}
+    </select>
+  </div>
+  <div class="chips" id="chips"></div>
+  <AdSlot slot="home-top" />
+  <p class="count" id="count">{BOOKS.length ? t.count(BOOKS.length.toLocaleString(lang)) : t.empty}</p>
+  <div id="list"><BookList books={BOOKS.slice(0, 40)} lang={lang} /></div>
+  <div class="more"><button id="more" hidden>{t.more}</button></div>
+
+  <script id="cfg" type="application/json" set:html={JSON.stringify(cfg)} />
+  <script is:inline src="/browse.js" defer></script>
+</Base>

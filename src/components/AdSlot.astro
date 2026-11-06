@@ -1,0 +1,10 @@
+---
+import { SITE } from "../config.mjs";
+const { slot = "" } = Astro.props;
+---
+{SITE.ads.enabled && SITE.ads.client && (
+  <div class="ad">
+    <ins class="adsbygoogle" style="display:block" data-ad-client={SITE.ads.client} data-ad-slot={slot} data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script is:inline>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+)}

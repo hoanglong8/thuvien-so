@@ -1,0 +1,8 @@
+---
+import C from "../../components/Reader.astro";
+import { BOOKS } from "../../lib/data.mjs";
+export function getStaticPaths() {
+  return BOOKS.filter((b) => b.file && b.file.format !== "epub").map((book) => ({ params: { slug: book.slug }, props: { book } }));
+}
+---
+<C book={Astro.props.book} lang="vi" />

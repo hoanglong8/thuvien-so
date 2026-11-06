@@ -1,0 +1,8 @@
+---
+import Base from "../layouts/Base.astro";
+import { T } from "../i18n.mjs";
+---
+<Base lang="vi" title={T.vi.notFound} noindex>
+  <h1>{T.vi.notFound} · {T.en.notFound}</h1>
+  <p><a href="/">{T.vi.home}</a> · <a href="/en/">{T.en.home}</a></p>
+</Base>
